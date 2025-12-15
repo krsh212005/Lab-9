@@ -1,0 +1,87 @@
+# -----------------------------------------------------------------
+# EXISTING TYPES (Product)
+# -----------------------------------------------------------------
+# Defines the Product type exposed by the GraphQL API.
+type Product {
+    id: ID!
+    name: String!
+    price: Float!
+    invoices: [Invoice!]
+}
+
+# Defines the input structure for creating or updating a product.
+input ProductInput {
+    name: String!
+    price: Float!
+}
+
+# -----------------------------------------------------------------
+# NEW TYPES (Customer)
+# -----------------------------------------------------------------
+type Customer {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    # One-to-Many relationship
+    invoices: [Invoice!]
+}
+
+input CustomerInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+}
+
+# -----------------------------------------------------------------
+# NEW TYPES (Invoice)
+# -----------------------------------------------------------------
+type Invoice {
+    id: ID!
+    issueDate: String! # Using String for LocalDateTime for simplicity
+    total: Float!
+    # Many-to-One relationship
+    customer: Customer!
+    # Many-to-Many relationship
+    products: [Product!]!
+}
+
+input InvoiceCreationInput {
+    customerId: ID!
+    productIds: [ID!]! # List of Product IDs to include
+}
+
+# -----------------------------------------------------------------
+# QUERY TYPE (READ OPERATIONS)
+# -----------------------------------------------------------------
+type Query {
+    # Existing Product Queries
+    productById(id: ID!): Product
+    allProducts: [Product!]!
+
+    # NEW Customer Queries
+    customerById(id: ID!): Customer
+    allCustomers: [Customer!]!
+
+    # NEW Invoice Queries
+    invoiceById(id: ID!): Invoice
+    allInvoices: [Invoice!]!
+}
+
+# -----------------------------------------------------------------
+# MUTATION TYPE (WRITE OPERATIONS)
+# -----------------------------------------------------------------
+type Mutation {
+    # Existing Product Mutations
+    createProduct(product: ProductInput!): Product!
+    updateProduct(id: ID!, product: ProductInput!): Product
+    deleteProduct(id: ID!): Boolean!
+
+    # NEW Customer Mutations
+    createCustomer(customer: CustomerInput!): Customer!
+    updateCustomer(id: ID!, customer: CustomerInput!): Customer
+    deleteCustomer(id: ID!): Boolean!
+
+    # NEW Invoice Mutation
+    createInvoice(request: InvoiceCreationInput!): Invoice!
+}
